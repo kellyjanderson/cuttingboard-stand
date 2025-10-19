@@ -19,6 +19,13 @@ lip_drop = 5;
 fin_point_front_ratio = 0.65;  // fraction from Kelly back (0) to Kelly front (1)
 fin_point_height_ratio = 0.9;  // ≈ 180mm with current heights (200 → 20mm drop)
 
+otter_mark_path = "ottermaker.svg";
+otter_mark_width = 8;
+otter_mark_depth = 0.6;
+otter_mark_left_offset = 3;
+otter_mark_source_width = 3300.62445;
+otter_mark_scale = otter_mark_width / otter_mark_source_width;
+
 can_diameter = 66;
 can_height = 122;
 can_clearance = 10;
@@ -97,11 +104,32 @@ module fin(x_pos, width) {
 }
 
 module front_lip() {
+    lip_height = platform_height + lip_drop;
     translate([0, platform_depth, platform_height])
-        cuboid(
-            [final_platform_width, lip_thickness, platform_height + lip_drop],
-            anchor=TOP+FRONT+LEFT
-        );
+        difference() {
+            cuboid(
+                [final_platform_width, lip_thickness, lip_height],
+                anchor=TOP+FRONT+LEFT
+            );
+            otter_mark_cutout(lip_height);
+        }
 }
 
 cutting_board_stand();
+
+module otter_mark_cutout(lip_height) {
+    translate([
+        otter_mark_left_offset + otter_mark_width / 2,
+        0.001,
+        -lip_height / 2
+    ])
+        xrot(-90)
+            mirror([0, 0, 1])
+                render(convexity = 10)
+                    linear_extrude(height = otter_mark_depth, center = false, convexity = 10)
+                        scale([otter_mark_scale, otter_mark_scale])
+                            offset(delta = 0.05)
+                                offset(delta = -0.05)
+                                    offset(delta = 0)
+                                        import(otter_mark_path, center = true, convexity = 10);
+}
