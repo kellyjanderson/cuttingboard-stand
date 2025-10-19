@@ -4,6 +4,10 @@ platform_target_width = 100;
 platform_depth = 200;
 platform_height = 5;
 
+recess_size = 25;
+recess_depth = 1.5;
+recess_corner_radius = 3;
+
 fin_width = 3;
 fin_spacing = 11.5;
 fin_height_back = 150;
@@ -31,7 +35,10 @@ final_platform_width = len(fin_pairs) > 0
     : 0;
 
 module cutting_board_stand() {
-    base_platform();
+    difference() {
+        base_platform();
+        bottom_recesses();
+    }
     fins();
     front_lip();
 }
@@ -43,6 +50,17 @@ module base_platform() {
 module fins() {
     for (fin_pair = fin_pairs)
         fin(fin_pair[0], fin_pair[1]);
+}
+
+module bottom_recesses() {
+    x_offsets = [final_platform_width / 4, final_platform_width * 3 / 4];
+    y_offsets = [platform_depth / 4, platform_depth * 3 / 4];
+
+    for (x_pos = x_offsets)
+        for (y_pos = y_offsets)
+            translate([x_pos, y_pos, -0.1])
+                linear_extrude(height = recess_depth + 0.1, center = false)
+                    rect([recess_size, recess_size], anchor = CENTER, rounding = recess_corner_radius);
 }
 
 module fin(x_pos, width) {
