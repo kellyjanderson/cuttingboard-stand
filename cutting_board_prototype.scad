@@ -1,4 +1,5 @@
 include <BOSL2/std.scad>;
+use <otter_mark_extrusion.scad>;
 
 platform_target_width = 100;
 platform_depth = 200;
@@ -19,11 +20,10 @@ lip_drop = 5;
 fin_point_front_ratio = 0.65;  // fraction from Kelly back (0) to Kelly front (1)
 fin_point_height_ratio = 0.9;  // ≈ 180mm with current heights (200 → 20mm drop)
 
-otter_mark_path = "ottermaker.svg";
 otter_mark_width = 8;
 otter_mark_depth = 0.6;
 otter_mark_left_offset = 3;
-otter_mark_source_width = 3300.62445;
+otter_mark_source_width = 1365.3333;
 otter_mark_scale = otter_mark_width / otter_mark_source_width;
 
 can_diameter = 66;
@@ -125,11 +125,6 @@ module otter_mark_cutout(lip_height) {
     ])
         xrot(-90)
             mirror([0, 0, 1])
-                render(convexity = 10)
-                    linear_extrude(height = otter_mark_depth, center = false, convexity = 10)
-                        scale([otter_mark_scale, otter_mark_scale])
-                            offset(delta = 0.05)
-                                offset(delta = -0.05)
-                                    offset(delta = 0)
-                                        import(otter_mark_path, center = true, convexity = 10);
+                scale([otter_mark_scale, otter_mark_scale, 1])
+                    otter_mark(height = otter_mark_depth);
 }
