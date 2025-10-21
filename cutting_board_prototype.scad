@@ -21,9 +21,10 @@ fin_point_front_ratio = 0.65;  // fraction from Kelly back (0) to Kelly front (1
 fin_point_height_ratio = 0.9;  // ≈ 180mm with current heights (200 → 20mm drop)
 
 otter_mark_width = 8;
-otter_mark_depth = 0.6;
-otter_mark_left_offset = 3;
-otter_mark_source_width = 1365.3333;
+otter_mark_depth = 3;
+otter_mark_left_offset = 5;
+otter_mark_inset = 0.8;
+otter_mark_source_width = 439.9;  // actual width from STL export
 otter_mark_scale = otter_mark_width / otter_mark_source_width;
 
 can_diameter = 66;
@@ -111,20 +112,22 @@ module front_lip() {
                 [final_platform_width, lip_thickness, lip_height],
                 anchor=TOP+FRONT+LEFT
             );
-            otter_mark_cutout(lip_height);
+            otter_mark_feature(lip_height);
         }
 }
 
 cutting_board_stand();
 
-module otter_mark_cutout(lip_height) {
+module otter_mark_feature(lip_height) {
     translate([
-        otter_mark_left_offset + otter_mark_width / 2,
-        0.001,
+        final_platform_width - (otter_mark_left_offset + otter_mark_width / 2),
+        otter_mark_depth - otter_mark_inset + lip_thickness,
         -lip_height / 2
     ])
         xrot(-90)
             mirror([0, 0, 1])
-                scale([otter_mark_scale, otter_mark_scale, 1])
-                    otter_mark(height = otter_mark_depth);
+                color([0.8, 0.4, 0.2])
+                    rotate([0, 0, 180])
+                        scale([otter_mark_scale, otter_mark_scale, 1])
+                            otter_mark(height = otter_mark_depth);
 }
